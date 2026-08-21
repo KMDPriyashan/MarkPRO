@@ -36,7 +36,7 @@ export const Register: React.FC = () => {
     setError('');
 
     try {
-      const { user, token } = await registerWithEmail(
+      const { token } = await registerWithEmail(
         formData.email,
         formData.password,
         formData.name

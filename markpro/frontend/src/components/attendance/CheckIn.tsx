@@ -6,7 +6,6 @@ import {
   Button,
   Alert,
   CircularProgress,
-  Grid,
   Chip,
   TextField,
 } from '@mui/material';
@@ -115,8 +114,8 @@ export const CheckIn: React.FC = () => {
         Check In
       </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+        <Box sx={{ flex: '1 1 320px' }}>
           <Card sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Face Capture
@@ -129,9 +128,9 @@ export const CheckIn: React.FC = () => {
               style={{ borderRadius: 8 }}
             />
           </Card>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={6}>
+        <Box sx={{ flex: '1 1 320px' }}>
           <Card sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Location Verification
@@ -200,8 +199,8 @@ export const CheckIn: React.FC = () => {
               </Alert>
             )}
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };

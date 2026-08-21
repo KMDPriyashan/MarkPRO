@@ -1,43 +1,57 @@
-import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box, Container, IconButton } from '@mui/material';
-import { Logout } from '@mui/icons-material';
-import { useAuth } from '../../hooks/useAuth';
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import {
+  Box,
+  Container,
+  CssBaseline,
+  ThemeProvider,
+  Typography,
+  createTheme,
+} from '@mui/material';
+import { Navbar } from './Navbar';
 
 export const Layout: React.FC = () => {
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? 'dark' : 'light',
+      primary: {
+        main: '#1976d2',
+      },
+      secondary: {
+        main: '#dc004e',
+      },
+    },
+  });
+
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Attendance System
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Navbar onThemeToggle={handleThemeToggle} isDarkMode={isDarkMode} />
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4, flex: 1 }}>
+          <Outlet />
+        </Container>
+        <Box
+          component="footer"
+          sx={{
+            py: 3,
+            mt: 'auto',
+            textAlign: 'center',
+            borderTop: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="body2" color="textSecondary">
+            © {new Date().getFullYear()} Attendance System. All rights reserved.
           </Typography>
-          <Typography variant="body2" sx={{ mr: 2 }}>
-            {user?.name} ({user?.role})
-          </Typography>
-          <IconButton color="inherit" onClick={handleLogout}>
-            <Logout />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      <Container maxWidth="xl" sx={{ mt: 4, flex: 1 }}>
-        <Outlet />
-      </Container>
-
-      <Box component="footer" sx={{ py: 3, textAlign: 'center' }}>
-        <Typography variant="body2" color="textSecondary">
-          © 2024 Attendance System. All rights reserved.
-        </Typography>
+        </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 };

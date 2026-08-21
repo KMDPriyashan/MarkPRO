@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Grid,
   Card,
   Typography,
   Avatar,
   LinearProgress,
   Chip,
 } from '@mui/material';
-import { People, CheckCircle, Warning, Schedule } from '@mui/icons-material';
+import { People, CheckCircle, Warning } from '@mui/icons-material';
 import { useAuthStore } from '../../store/auth.store';
 import { useAttendanceStore } from '../../store/attendance.store';
 import { apiClient } from '../../api/axios.config';
@@ -69,9 +68,9 @@ export const Dashboard: React.FC = () => {
         Welcome back, {user?.name || 'User'} 👋
       </Typography>
 
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 3 }}>
         {statCards.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Box key={index} sx={{ flex: '1 1 280px', minWidth: 0 }}>
             <Card sx={{ p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Typography variant="caption" color="textSecondary">
@@ -83,9 +82,9 @@ export const Dashboard: React.FC = () => {
                 {stat.icon}
               </Avatar>
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
 
       <Card sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>

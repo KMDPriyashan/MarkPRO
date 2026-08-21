@@ -7,7 +7,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response) => {
   try {
     const snapshot = await firebaseFirestore.collection('users').get();
 
-    const users = snapshot.docs.map((doc) => ({
+    const users = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -59,7 +59,7 @@ export const getAttendanceStats = async (req: AuthRequest, res: Response) => {
       absent: 0,
     };
 
-    snapshot.forEach((doc) => {
+    snapshot.forEach((doc: any) => {
       const data = doc.data();
       if (data.status === 'PRESENT') stats.present++;
       else if (data.status === 'LATE') stats.late++;

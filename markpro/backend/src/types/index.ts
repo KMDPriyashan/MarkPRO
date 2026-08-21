@@ -1,3 +1,13 @@
-export * from './user.types';
-export * from './attendance.types';
-export * from './api.types';
+export type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+};
+
+export type AuthUser = {
+  uid: string;
+  email: string;
+  name?: string;
+  role?: string;
+};

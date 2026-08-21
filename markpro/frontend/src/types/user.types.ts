@@ -5,9 +5,16 @@ export interface User {
   role: 'SUPER_ADMIN' | 'ADMIN' | 'MANAGER' | 'EMPLOYEE';
   department?: string;
   phone?: string;
-  isActive?: boolean;
-  createdAt?: string;
+  address?: string;
+  profileImage?: string;
+  faceData?: string;
+  deviceFingerprint?: string;
+  fcmToken?: string;
+  isActive: boolean;
+  emailVerified: boolean;
   lastLogin?: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface LoginCredentials {
@@ -17,6 +24,7 @@ export interface LoginCredentials {
 
 export interface RegisterData extends LoginCredentials {
   name: string;
-  role?: string;
+  role?: 'ADMIN' | 'MANAGER' | 'EMPLOYEE';
   department?: string;
+  phone?: string;
 }

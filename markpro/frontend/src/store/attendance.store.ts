@@ -1,15 +1,5 @@
 import { create } from 'zustand';
-
-interface Attendance {
-  id: string;
-  userId: string;
-  userName: string;
-  type: 'CHECK_IN' | 'CHECK_OUT';
-  date: string;
-  checkInTime: string;
-  checkOutTime?: string;
-  status: 'PRESENT' | 'LATE';
-}
+import { Attendance } from '../types/attendance.types';
 
 interface AttendanceState {
   todayAttendance: Attendance | null;
@@ -22,6 +12,7 @@ interface AttendanceState {
   addAttendance: (attendance: Attendance) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  clearError: () => void;
 }
 
 export const useAttendanceStore = create<AttendanceState>((set) => ({
@@ -37,9 +28,12 @@ export const useAttendanceStore = create<AttendanceState>((set) => ({
   addAttendance: (attendance) =>
     set((state) => ({
       history: [attendance, ...state.history],
+      todayAttendance: attendance.type === 'CHECK_IN' ? attendance : state.todayAttendance,
     })),
 
   setLoading: (isLoading) => set({ isLoading }),
 
   setError: (error) => set({ error }),
+
+  clearError: () => set({ error: null }),
 }));

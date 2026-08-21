@@ -177,7 +177,7 @@ export const getTodayAttendance = async (req: AuthRequest, res: Response) => {
       .where('date', '==', today)
       .get();
 
-    const items = todayDoc.docs.map((doc) => ({
+    const items = todayDoc.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -203,7 +203,7 @@ export const getAttendanceHistory = async (req: AuthRequest, res: Response) => {
       .limit(Number(limit))
       .get();
 
-    const items = snapshot.docs.map((doc) => ({
+    const items = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
     }));

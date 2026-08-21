@@ -88,12 +88,12 @@ export const adminSchema = {
 };
 
 // Validate data with schema
-export const validateData = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
+export const validateData = <T>(schema: z.ZodType<T>, data: unknown): T => {
   try {
     return schema.parse(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(error.errors.map((e) => e.message).join(', '));
+      throw new Error(error.issues.map((e) => e.message).join(', '));
     }
     throw error;
   }

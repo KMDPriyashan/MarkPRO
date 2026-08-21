@@ -28,7 +28,7 @@ export const Login: React.FC = () => {
     setError('');
 
     try {
-      const { user, token } = await loginWithEmail(email, password);
+      const { token } = await loginWithEmail(email, password);
       localStorage.setItem('token', token);
 
       // Get user data from backend
