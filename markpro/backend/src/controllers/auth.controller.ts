@@ -1,95 +1,151 @@
 import { Request, Response } from 'express';
-import { firebaseAuth, firebaseFirestore } from '../config/firebase';
+import { firebaseAuth, firebaseFirestore, isFirebaseInitialized } from '../config/firebase';
 import { AppError } from '../middleware/error.middleware';
 import { AuthRequest } from '../middleware/auth.middleware';
+
+// In-memory user store for development mode
+const devUsers: Record<string, any> = {};
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, name, role, department } = req.body;
 
-    // Firebase Auth user create කරන්න
-    const userRecord = await firebaseAuth.createUser({
-      email,
-      password,
-      displayName: name,
-    });
+    if (!email || !password || !name) {
+      throw new AppError('Email, password, and name are required', 400);
+    }
 
-    // Set custom claims (role)
-    await firebaseAuth.setCustomUserClaims(userRecord.uid, {
-      role: role || 'EMPLOYEE',
-    });
+    if (isFirebaseInitialized) {
+      // Firebase mode - create user in Firebase
+      const userRecord = await firebaseAuth.createUser({
+        email,
+        password,
+        displayName: name,
+      });
 
-    // Firestore එකේ user save කරන්න
-    await firebaseFirestore.collection('users').doc(userRecord.uid).set({
-      uid: userRecord.uid,
-      email,
-      name,
-      role: role || 'EMPLOYEE',
-      department: department || 'General',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    });
+      await firebaseAuth.setCustomUserClaims(userRecord.uid, {
+        role: role || 'EMPLOYEE',
+      });
 
-    // Custom token generate කරන්න
-    const customToken = await firebaseAuth.createCustomToken(userRecord.uid);
+      await firebaseFirestore.collection('users').doc(userRecord.uid).set({
+        uid: userRecord.uid,
+        email,
+        name,
+        role: role || 'EMPLOYEE',
+        department: department || 'General',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+      });
 
-    res.status(201).json({
-      success: true,
-      data: {
-        user: {
-          uid: userRecord.uid,
-          email: userRecord.email,
-          name: userRecord.displayName,
-          role: role || 'EMPLOYEE',
+      const customToken = await firebaseAuth.createCustomToken(userRecord.uid);
+
+      res.status(201).json({
+        success: true,
+        data: {
+          user: {
+            uid: userRecord.uid,
+            email: userRecord.email,
+            name: userRecord.displayName,
+            role: role || 'EMPLOYEE',
+          },
+          token: customToken,
         },
-        token: customToken,
-      },
-    });
+      });
+    } else {
+      // Development mode - store in memory
+      const uid = `dev-${Date.now()}`;
+      devUsers[email] = {
+        uid,
+        email,
+        password,
+        name,
+        role: role || 'EMPLOYEE',
+        department: department || 'General',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+      };
+
+      res.status(201).json({
+        success: true,
+        data: {
+          user: {
+            uid,
+            email,
+            name,
+            role: role || 'EMPLOYEE',
+          },
+          message: '✓ User registered in development mode',
+        },
+      });
+    }
   } catch (error: any) {
-    throw new AppError(error.message, 400);
+    throw new AppError(error.message || 'Registration failed', 400);
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
-    // Note: Password verify කරන්නේ Frontend Firebase SDK එකෙන්
+    const { email, password } = req.body;
 
-    const userRecord = await firebaseAuth.getUserByEmail(email);
-
-    if (!userRecord) {
-      throw new AppError('User not found', 404);
+    if (!email || !password) {
+      throw new AppError('Email and password are required', 400);
     }
 
-    // Firestore එකෙන් user data ගන්න
-    const userDoc = await firebaseFirestore
-      .collection('users')
-      .doc(userRecord.uid)
-      .get();
+    if (isFirebaseInitialized) {
+      // Firebase mode
+      const userRecord = await firebaseAuth.getUserByEmail(email);
 
-    const userData = userDoc.data();
+      if (!userRecord) {
+        throw new AppError('User not found', 404);
+      }
 
-    // Last login update කරන්න
-    await firebaseFirestore
-      .collection('users')
-      .doc(userRecord.uid)
-      .update({
-        lastLogin: new Date().toISOString(),
-      });
+      const userDoc = await firebaseFirestore
+        .collection('users')
+        .doc(userRecord.uid)
+        .get();
 
-    res.json({
-      success: true,
-      data: {
-        user: {
-          uid: userRecord.uid,
-          email: userRecord.email,
-          name: userRecord.displayName || userData?.name,
-          role: userData?.role || 'EMPLOYEE',
+      const userData = userDoc.data();
+
+      await firebaseFirestore
+        .collection('users')
+        .doc(userRecord.uid)
+        .update({
+          lastLogin: new Date().toISOString(),
+        });
+
+      res.json({
+        success: true,
+        data: {
+          user: {
+            uid: userRecord.uid,
+            email: userRecord.email,
+            name: userRecord.displayName || userData?.name,
+            role: userData?.role || 'EMPLOYEE',
+          },
         },
-      },
-    });
+      });
+    } else {
+      // Development mode - check in-memory store
+      const user = devUsers[email];
+
+      if (!user || user.password !== password) {
+        throw new AppError('Invalid email or password', 401);
+      }
+
+      res.json({
+        success: true,
+        data: {
+          user: {
+            uid: user.uid,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          },
+          message: '✓ Logged in (development mode)',
+        },
+      });
+    }
   } catch (error: any) {
-    throw new AppError(error.message, 400);
+    throw new AppError(error.message || 'Login failed', 400);
   }
 };
 
@@ -99,24 +155,39 @@ export const getCurrentUser = async (req: AuthRequest, res: Response) => {
       throw new AppError('User not authenticated', 401);
     }
 
-    const userDoc = await firebaseFirestore
-      .collection('users')
-      .doc(req.user.uid)
-      .get();
+    if (isFirebaseInitialized) {
+      // Firebase mode
+      const userDoc = await firebaseFirestore
+        .collection('users')
+        .doc(req.user.uid)
+        .get();
 
-    const userData = userDoc.data();
+      const userData = userDoc.data();
 
-    res.json({
-      success: true,
-      data: {
-        uid: req.user.uid,
-        email: req.user.email,
-        name: req.user.name,
-        role: req.user.role,
-        ...userData,
-      },
-    });
+      res.json({
+        success: true,
+        data: {
+          uid: req.user.uid,
+          email: req.user.email,
+          name: req.user.name,
+          role: req.user.role,
+          ...userData,
+        },
+      });
+    } else {
+      // Development mode - return user from token
+      res.json({
+        success: true,
+        data: {
+          uid: req.user.uid,
+          email: req.user.email,
+          name: req.user.name,
+          role: req.user.role,
+          mode: 'development',
+        },
+      });
+    }
   } catch (error: any) {
-    throw new AppError(error.message, 400);
+    throw new AppError(error.message || 'Failed to get user', 400);
   }
 };
