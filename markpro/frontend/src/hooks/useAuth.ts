@@ -28,8 +28,24 @@ export const useAuth = () => {
           setUser(null);
         }
       } else {
-        localStorage.removeItem('token');
-        setUser(null);
+        // Development mode uses a backend token without a Firebase session.
+        const token = localStorage.getItem('token');
+
+        if (token) {
+          try {
+            const response = await apiClient.get('/auth/me', {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+            setUser(response.data.data);
+          } catch (error) {
+            console.error('Failed to restore backend session:', error);
+            localStorage.removeItem('token');
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
       }
 
       setLoading(false);

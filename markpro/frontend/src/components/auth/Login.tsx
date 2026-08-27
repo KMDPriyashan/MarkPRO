@@ -56,7 +56,7 @@ export const Login: React.FC = () => {
       setUser(response.data.data);
       navigate('/dashboard');
     } catch (error: any) {
-      setError(error.message || 'Login failed');
+      setError(error.response?.data?.error || error.message || 'Login failed');
     } finally {
       setLoading(false);
     }
