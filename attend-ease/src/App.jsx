@@ -13,6 +13,10 @@ import AuditLogsPage from './pages/AuditLogsPage'
 import { AuthProvider } from './context/AuthContext'
 import Layout from './components/common/Layout'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import FoodCourtPage from './pages/FoodCourtPage'
+import TransportPage from './pages/TransportPage'
+import AccommodationPage from './pages/AccommodationPage'
+import FacilitiesPage from './pages/FacilitiesPage'
 
 /**
  * Configure the AttendEase route tree and authentication boundary.
@@ -20,5 +24,5 @@ import ProtectedRoute from './components/common/ProtectedRoute'
  * @returns {JSX.Element} The application router and toast notifications.
  */
 export default function App() {
-  return <AuthProvider><BrowserRouter><Routes><Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignupPage />} /><Route element={<ProtectedRoute />}><Route element={<Layout />}><Route path="/dashboard" element={<DashboardPage />} /><Route path="/attendance" element={<AttendancePage />} /><Route path="/leave" element={<LeavePage />} /><Route path="/payroll" element={<PayrollPage />} /><Route path="/employees" element={<EmployeesPage />} /><Route path="/audit-logs" element={<AuditLogsPage />} /></Route></Route><Route path="*" element={<NotFoundPage />} /></Routes></BrowserRouter><ToastContainer position="top-right" /></AuthProvider>
+  return <AuthProvider><BrowserRouter><Routes><Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignupPage />} /><Route element={<ProtectedRoute />}><Route element={<Layout />}><Route path="/dashboard" element={<DashboardPage />} /><Route path="/attendance" element={<AttendancePage />} /><Route path="/leave" element={<LeavePage />} /><Route path="/payroll" element={<PayrollPage />} /><Route path="/employees" element={<EmployeesPage />} /><Route path="/audit-logs" element={<AuditLogsPage />} /><Route path="/food-court" element={<FoodCourtPage />} /><Route path="/transport" element={<TransportPage />} /><Route path="/accommodation" element={<AccommodationPage />} /><Route path="/facilities" element={<FacilitiesPage />} /></Route></Route><Route path="*" element={<NotFoundPage />} /></Routes></BrowserRouter><ToastContainer position="top-right" /></AuthProvider>
 }
