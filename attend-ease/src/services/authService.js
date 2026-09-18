@@ -91,7 +91,7 @@ export function signup(userData) {
     username: username.trim(),
     email: email.trim().toLowerCase(),
     passwordHash: btoa(password),
-    role: users.length === 0 ? 'admin' : 'employee',
+    role: users.length === 0 ? 'admin' : ['employee', 'manager', 'admin'].includes(profile.role) ? profile.role : 'employee',
     createdAt: new Date().toISOString(),
   }
 
