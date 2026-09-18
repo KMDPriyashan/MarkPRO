@@ -53,6 +53,7 @@ export function findUserByUsername(username) {
 function sanitizeUser(user) {
   const safeUser = { ...user }
   delete safeUser.passwordHash
+  delete safeUser.password
   return safeUser
 }
 
@@ -121,7 +122,7 @@ export function login(username, password) {
   }
 
   const user = findUserByUsername(username)
-  if (!user || user.passwordHash !== btoa(password)) {
+  if (!user || (user.passwordHash ?? user.password) !== btoa(password)) {
     return { success: false, message: 'Invalid username or password.' }
   }
 
