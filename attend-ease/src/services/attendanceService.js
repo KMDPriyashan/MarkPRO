@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import { getItem, setItem } from '../utils/storage'
+import { getAllEmployees } from './employeeService'
+import { getCurrentUser } from './authService'
+import { logAction } from '../utils/auditLogger'
 
 const ATTENDANCE_KEY = 'attendanceRecords'
 const LEAVE_KEY = 'leaveRequests'
@@ -28,6 +31,7 @@ export function clockIn(user, location = {}) {
 
   const record = { id: uuidv4(), employeeId, employeeName: user?.fullName || user?.username || 'Employee', date: today, clockIn: new Date().toISOString(), clockOut: null, location, status: calculateStatus(new Date()), workingHours: 0 }
   setItem(ATTENDANCE_KEY, [...records.filter((item) => item.id !== existing?.id), record])
+  logAction(getCurrentUser(), 'attendance.clocked_in', { employeeId, date: today })
   return record
 }
 
@@ -47,6 +51,7 @@ export function clockOut(user) {
   record.workingHours = calculateWorkingHours(record.clockIn, record.clockOut)
   records[recordIndex] = record
   setItem(ATTENDANCE_KEY, records)
+  logAction(getCurrentUser(), 'attendance.clocked_out', { employeeId, date: record.date })
   return record
 }
 
@@ -105,5 +110,6 @@ function getDateKey(date = new Date()) {
 }
 
 function getEmployeeId(user) {
-  return user?.id || user?.employeeId || user?.username
+  if (user?.id || user?.employeeId) return user.id || user.employeeId
+  return getAllEmployees().find((employee) => employee.username === user?.username)?.id || user?.username
 }
