@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { getItem, setItem } from '../utils/storage'
+import { getCurrentUser } from './authService'
+import { logAction } from '../utils/auditLogger'
 
 const EMPLOYEES_KEY = 'employees'
 
@@ -33,6 +35,7 @@ export function createEmployee(employeeData) {
   const employee = normalizeEmployee(employeeData)
   const employees = [...getAllEmployees(), employee]
   setItem(EMPLOYEES_KEY, employees)
+  logAction(getCurrentUser(), 'employee.created', { employeeId: employee.id, employeeName: employee.fullName })
   return employee
 }
 
@@ -53,6 +56,7 @@ export function updateEmployee(employeeId, updates) {
   const updatedEmployee = normalizeEmployee({ ...employees[employeeIndex], ...updates }, employeeId)
   employees[employeeIndex] = updatedEmployee
   setItem(EMPLOYEES_KEY, employees)
+  logAction(getCurrentUser(), 'employee.updated', { employeeId, employeeName: updatedEmployee.fullName })
   return updatedEmployee
 }
 
@@ -70,6 +74,7 @@ export function deleteEmployee(employeeId) {
   }
 
   setItem(EMPLOYEES_KEY, remainingEmployees)
+  logAction(getCurrentUser(), 'employee.deleted', { employeeId })
   return true
 }
 
@@ -86,6 +91,7 @@ export function bulkImport(employeeData) {
 
   const importedEmployees = employeeData.map((employee) => normalizeEmployee(employee))
   setItem(EMPLOYEES_KEY, [...getAllEmployees(), ...importedEmployees])
+  logAction(getCurrentUser(), 'employee.bulk_imported', { count: importedEmployees.length })
   return importedEmployees
 }
 

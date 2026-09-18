@@ -2,6 +2,8 @@ import { calculatePayroll } from '../utils/payrollLogic'
 import { getMonthlyAttendance } from './attendanceService'
 import { getAllEmployees } from './employeeService'
 import { getItem, setItem } from '../utils/storage'
+import { getCurrentUser } from './authService'
+import { logAction } from '../utils/auditLogger'
 
 const PAYROLL_KEY = 'payrollRecords'
 
@@ -16,6 +18,7 @@ export function generatePayroll(employee, month) {
   const payroll = calculatePayroll(employee, getMonthlyAttendance(month, employee.id), month)
   const records = getAllPayrolls().filter((record) => record.id !== payroll.id)
   setItem(PAYROLL_KEY, [...records, payroll])
+  logAction(getCurrentUser(), 'payroll.generated', { employeeId: employee.id, month, netSalary: payroll.netSalary })
   return payroll
 }
 

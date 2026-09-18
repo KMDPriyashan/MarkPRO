@@ -3,6 +3,6 @@
  *
  * @returns {JSX.Element} Loading indicator.
  */
-export default function Loader() {
-  return <div aria-label="Loading" className="flex items-center justify-center p-6" role="status"><span className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" /></div>
+export default function Loader({ label = 'Loading' }) {
+  return <div aria-label={label} className="flex items-center justify-center gap-3 p-6 text-sm text-slate-500" role="status"><span className="h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />{label}</div>
 }

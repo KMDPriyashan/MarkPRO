@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { getItem, setItem } from '../utils/storage'
+import { getCurrentUser } from './authService'
+import { logAction } from '../utils/auditLogger'
 
 const LEAVE_KEY = 'leaveRequests'
 export const LEAVE_BALANCES = { annual: 14, sick: 7, casual: 7 }
@@ -85,6 +87,7 @@ function updateLeaveStatus(leaveId, status, reason) {
   if (index === -1) return null
   leaves[index] = { ...leaves[index], status, decisionReason: String(reason).trim(), decidedAt: new Date().toISOString() }
   setItem(LEAVE_KEY, leaves)
+  logAction(getCurrentUser(), `leave.${status}`, { leaveId, reason: String(reason).trim() })
   return leaves[index]
 }
 

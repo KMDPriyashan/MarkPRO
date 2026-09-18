@@ -1,5 +1,6 @@
 import { getItem, removeItem, setItem } from '../utils/storage'
 import { validateEmail, validatePassword, validateRequired, validateUsername } from '../utils/validators'
+import { logAction } from '../utils/auditLogger'
 
 const USERS_KEY = 'attendEaseUsers'
 const CURRENT_USER_KEY = 'attendEaseCurrentUser'
@@ -97,6 +98,7 @@ export function signup(userData) {
   }
 
   saveUser(user)
+  logAction(null, 'signup', { username: user.username, email: user.email, role: user.role })
   return { success: true, user: sanitizeUser(user), message: 'Account created successfully.' }
 }
 
@@ -128,6 +130,7 @@ export function login(username, password) {
 
   const safeUser = sanitizeUser(user)
   setItem(CURRENT_USER_KEY, safeUser)
+  logAction(safeUser, 'login', 'User signed in successfully')
   return { success: true, user: safeUser, message: 'Login successful.' }
 }
 
