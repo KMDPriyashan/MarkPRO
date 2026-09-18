@@ -1,4 +1,4 @@
-import { FiActivity, FiCalendar, FiCreditCard, FiFileText, FiGrid, FiHome, FiTruck, FiTool, FiCoffee, FiUsers, FiX } from 'react-icons/fi'
+import { FiActivity, FiCalendar, FiCreditCard, FiFileText, FiGrid, FiHome, FiTruck, FiTool, FiCoffee, FiUsers, FiSettings, FiX } from 'react-icons/fi'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
@@ -9,6 +9,7 @@ const navigation = [
   { label: 'Payroll', path: '/payroll', icon: FiCreditCard },
   { label: 'Employees', path: '/employees', icon: FiUsers, adminOnly: true },
   { label: 'Audit Logs', path: '/audit-logs', icon: FiFileText, adminOnly: true },
+  { label: 'Organization', path: '/organization', icon: FiSettings, adminOnly: true },
   { label: 'Food Court', path: '/food-court', icon: FiCoffee },
   { label: 'Transport', path: '/transport', icon: FiTruck },
   { label: 'Accommodation', path: '/accommodation', icon: FiHome },
