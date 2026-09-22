@@ -28,6 +28,12 @@ npm run lint
 npm run build
 ```
 
+## GitHub Pages
+
+GitHub Pages is deployed automatically from the `main` branch by the workflow in `.github/workflows/deploy-pages.yml`. In the repository settings, set Pages to **GitHub Actions** as the deployment source. The published site is:
+
+`https://kmdpriyashan.github.io/MarkPRO/`
+
 ## Default Login
 
 Use `admin` as the username and `admin123` as the password. Seed data is created automatically on the first application load.

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import LoginPage from './pages/LoginPage'
@@ -25,5 +25,5 @@ import OrganizationPage from './pages/OrganizationPage'
  * @returns {JSX.Element} The application router and toast notifications.
  */
 export default function App() {
-  return <AuthProvider><BrowserRouter><Routes><Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignupPage />} /><Route element={<ProtectedRoute />}><Route element={<Layout />}><Route path="/dashboard" element={<DashboardPage />} /><Route path="/attendance" element={<AttendancePage />} /><Route path="/leave" element={<LeavePage />} /><Route path="/payroll" element={<PayrollPage />} /><Route path="/employees" element={<EmployeesPage />} /><Route path="/audit-logs" element={<AuditLogsPage />} /><Route path="/organization" element={<OrganizationPage />} /><Route path="/food-court" element={<FoodCourtPage />} /><Route path="/transport" element={<TransportPage />} /><Route path="/accommodation" element={<AccommodationPage />} /><Route path="/facilities" element={<FacilitiesPage />} /></Route></Route><Route path="*" element={<NotFoundPage />} /></Routes></BrowserRouter><ToastContainer position="top-right" /></AuthProvider>
+  return <AuthProvider><HashRouter><Routes><Route path="/login" element={<LoginPage />} /><Route path="/signup" element={<SignupPage />} /><Route element={<ProtectedRoute />}><Route element={<Layout />}><Route path="/dashboard" element={<DashboardPage />} /><Route path="/attendance" element={<AttendancePage />} /><Route path="/leave" element={<LeavePage />} /><Route path="/payroll" element={<PayrollPage />} /><Route path="/employees" element={<EmployeesPage />} /><Route path="/audit-logs" element={<AuditLogsPage />} /><Route path="/organization" element={<OrganizationPage />} /><Route path="/food-court" element={<FoodCourtPage />} /><Route path="/transport" element={<TransportPage />} /><Route path="/accommodation" element={<AccommodationPage />} /><Route path="/facilities" element={<FacilitiesPage />} /></Route></Route><Route path="*" element={<NotFoundPage />} /></Routes></HashRouter><ToastContainer position="top-right" /></AuthProvider>
 }
